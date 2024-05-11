@@ -1,0 +1,9 @@
+# build directory
+/target
+
+# os specific files
+**/.DS_Store
+
+# environment files
+**/*.env
+!example.env

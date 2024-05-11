@@ -1,0 +1,12 @@
+[package]
+name = "drivethru_rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.83"
+async-openai = "0.21.0"
+cpal = "0.15.3"
+dotenv = "0.15.0"
+strum = { version = "0.26.2", features = ["derive"] }
+tokio = { version = "1.37.0", features = ["full"] }
