@@ -3,13 +3,13 @@
 mod audio;
 mod env;
 
+use crate::env::{Env, EnvBuilder, OpenAIOptions};
 use anyhow::Result;
 use async_openai::{
     config::OpenAIConfig,
     types::{AssistantObject, CreateAssistantRequestArgs},
     Client,
 };
-use env::{EnvBuilder, OpenAIOptions};
 use strum::AsRefStr;
 
 const LLM_CLIENT_PROGRAM_CONTEXT: &str =
@@ -82,24 +82,27 @@ impl AssistantFactory {
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    const ENV_PATH: &str = "example.env";
+    // const ENV_PATH: &str = "example.env";
 
-    let env = EnvBuilder::new().path(&ENV_PATH).build();
+    // let env: Env = EnvBuilder::new().path(&ENV_PATH).build();
 
-    let OpenAIOptions {
-        api_key,
-        organization_id,
-        project_id,
-    } = env.openai_options();
+    // let OpenAIOptions {
+    //     api_key,
+    //     organization_id,
+    //     project_id,
+    // } = env.openai_options();
 
-    let openai_config = OpenAIConfig::new()
-        .with_api_key(api_key)
-        .with_org_id(organization_id)
-        .with_project_id(project_id);
+    // let openai_config = OpenAIConfig::new()
+    //     .with_api_key(api_key)
+    //     .with_org_id(organization_id)
+    //     .with_project_id(project_id);
 
-    let openai_client = Client::with_config(openai_config);
+    // let openai_client: Client<OpenAIConfig> = Client::with_config(openai_config);
 
-    let assistant = openai_client.assistants().retrieve(ASSISTANT_ID).await?;
+    // let assistant: AssistantObject = openai_client.assistants().retrieve(ASSISTANT_ID).await?;
+
+    let audio_device = audio::AudioDevice::new();
+    audio_device.record_audio();
 
     Ok(())
 }
