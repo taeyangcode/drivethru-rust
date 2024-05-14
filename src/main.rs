@@ -101,8 +101,5 @@ async fn main() -> Result<(), anyhow::Error> {
 
     // let assistant: AssistantObject = openai_client.assistants().retrieve(ASSISTANT_ID).await?;
 
-    let audio_device = audio::AudioDevice::new();
-    audio_device.record_audio();
-
     Ok(())
 }
