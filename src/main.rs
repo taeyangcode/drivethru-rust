@@ -101,5 +101,13 @@ async fn main() -> Result<(), anyhow::Error> {
 
     // let assistant: AssistantObject = openai_client.assistants().retrieve(ASSISTANT_ID).await?;
 
+    use std::sync::Arc;
+
+    let host = Arc::new(cpal::default_host());
+    let host_clone = host.clone();
+
+    let recorder = audio::AudioRecorderBuilder::new(host_clone).build()?;
+    let data = recorder.record()?;
+
     Ok(())
 }
