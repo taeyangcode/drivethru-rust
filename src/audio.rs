@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    borrow::BorrowMut,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::{anyhow, Result};
 use cpal::{
@@ -112,6 +115,100 @@ impl AudioRecorderBuilder {
 pub struct AudioRecorder {
     device: Device,
     config: SupportedStreamConfig,
+}
+
+impl AudioRecorder {
+    pub fn record(&self) -> Result<Vec<f64>, anyhow::Error> {
+        let input_data: Arc<Mutex<Vec<f64>>> = Default::default();
+
+        let error_function = move |error| {
+            eprintln!("{error}");
+        };
+
+        let stream = match &self.config.sample_format() {
+            cpal::SampleFormat::I8 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<i8, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::I16 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<i16, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::I32 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<i32, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::U8 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<u8, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::U16 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<u16, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::U32 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<u32, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::F32 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<f32, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::F64 => self.device.build_output_stream(
+                &self.config.config(),
+                move |data, _: &_| {
+                    Self::stream_input_audio::<f64, f64, Vec<f64>>(data, input_data.clone());
+                },
+                error_function,
+                None,
+            ),
+            cpal::SampleFormat::I64 => todo!("i64 to f64 conversion"),
+            cpal::SampleFormat::U64 => todo!("u64 to f64 conversion"),
+            _ => panic!("All potential sample formats exhausted."),
+        }?;
+
+        stream.play();
+
+        todo!()
+    }
+
+    fn stream_input_audio<T: Copy, U, C>(input: &[T], container: Arc<Mutex<C>>)
+    where
+        U: From<T>,
+        C: Extend<U>,
+    {
+        if let Ok(mut guard) = container.lock() {
+            guard.extend(input.iter().copied().map(U::from))
+        }
+    }
 }
 
 pub struct AudioPlayerBuilder {
