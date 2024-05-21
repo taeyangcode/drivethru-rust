@@ -101,7 +101,7 @@ impl AudioRecorderBuilder {
             .ok_or(anyhow!("ERROR: Device could not be found."))?; // TODO: Handle with custom error.
 
         let config: SupportedStreamConfig = match self.find_input_stream_config {
-            Some(find) => find(device.supported_input_configs()?)?,
+            Some(ref find) => find(device.supported_input_configs()?)?,
             None => device.default_input_config()?,
         };
 
