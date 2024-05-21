@@ -12,7 +12,7 @@ enum EnvKey {
 
 #[derive(Default)]
 pub struct EnvBuilder {
-    env_path: Option<&'static str>,
+    env_path: String,
 }
 
 impl EnvBuilder {
@@ -20,13 +20,13 @@ impl EnvBuilder {
         EnvBuilder::default()
     }
 
-    pub fn path(mut self, env_path: &'static str) -> Self {
-        self.env_path = Some(env_path);
+    pub fn with_path<S: Into<String>>(mut self, env_path: S) -> Self {
+        self.env_path = env_path.into();
         self
     }
 
     pub fn build(self) -> Env {
-        dotenv::from_filename(self.env_path.unwrap()).unwrap();
+        dotenv::from_filename(self.env_path).unwrap();
         Env
     }
 }
